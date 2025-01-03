@@ -1,4 +1,9 @@
+using Blazored.FluentValidation;
+using FluentValidation;
+using GameStoreBlazor.Clients;
 using GameStoreBlazor.Components;
+using GameStoreBlazor.Models;
+
 
 namespace GameStoreBlazor
 {
@@ -10,8 +15,22 @@ namespace GameStoreBlazor
 
             // Add services to the container.
             builder.Services.AddRazorComponents();
+            builder.Services.AddRazorPages();
+            builder.Services.AddServerSideBlazor();
+            builder.Services.AddValidatorsFromAssemblyContaining<GameDetailsValidator>();
+            builder.Services.AddScoped<FluentValidationValidator>();
+            builder.Services.AddSingleton<GamesClient>();
+            builder.Services.AddSingleton<QrCodeService>();
+            builder.Services.AddSingleton<PdfService>();
+            builder.Services.AddServerSideBlazor(); 
+            builder.Services.AddSignalR();
+
+
+
 
             var app = builder.Build();
+
+            Directory.CreateDirectory(Path.Combine(app.Environment.WebRootPath, "pdf"));
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -27,6 +46,8 @@ namespace GameStoreBlazor
 
             app.MapStaticAssets();
             app.MapRazorComponents<App>();
+            app.MapBlazorHub();
+         
 
             app.Run();
         }

@@ -31,7 +31,28 @@ namespace GameStoreBlazor.Clients
             ReleaseDate = new DateOnly(1990, 11, 21)
             }
         ];
-
+        
+        public event Action? OnGamesUpdated;
+       
+        private readonly Genre[] genres = new GenresClient().GetGenres();
         public GameSummary[] GetGames() => games.ToArray();
+
+        public void AddGame(GameDetails game)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(game.GenreId);
+            var genre = genres.Single(g => g.Id == int.Parse(game.GenreId));
+
+            var gameSummary = new GameSummary()
+            {
+                 Id = games.Count +1,
+                 Name = game.Name,
+                 Genre = genre.Name,
+                 Price = game.Price,
+                 ReleaseDate = game.ReleaseDate,
+            };
+
+            games.Add(gameSummary);
+            OnGamesUpdated?.Invoke();
+        }
     }
 }
